@@ -1,0 +1,24 @@
+name: golden
+
+# Enforces the demo golden test, which locks the committed demo/deployed
+# engine output. Base deps only (no lailara_engagement).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  golden:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: pip install pandas flask-caching pytest
+      - name: Demo golden
+        run: python -m pytest tests/test_demo_golden.py -q

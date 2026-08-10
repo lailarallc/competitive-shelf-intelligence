@@ -71,7 +71,16 @@ def _date_cutoff(days: int, anchor: Optional[date] = None) -> Optional[date]:
     if days <= 0:
         return None
     if anchor is None:
-        anchor = _max_scraped_date() or date.today()
+        # Window end defaults to the newest scraped_date — never the wall clock.
+        # (A live clock would silently slide every window forward each day the app
+        # runs, and past-window data would vanish.) An empty dataset raises rather
+        # than fabricating a today-based window.
+        anchor = _max_scraped_date()
+        if anchor is None:
+            raise ValueError(
+                "_date_cutoff: no scraped_date in the data and no explicit anchor; "
+                "the window anchor is never the wall clock."
+            )
     return anchor - timedelta(days=days)
 
 

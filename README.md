@@ -122,6 +122,28 @@ app/
   tabs/                    One module per dashboard tab
 ```
 
+## Client engagement use
+
+The demo renders a synthetic dataset (modeled on public product pages, **not**
+live-scraped competitor data — an honest banner says so on every view). To analyze
+a **client's own shelf/pricing observations** in place — validated, never
+committed, never deployed — use client mode (see [INPUT-SPEC.md](INPUT-SPEC.md)):
+
+```bash
+pip install -e ../engagement-template/lib      # the shared lailara_engagement scaffold
+python client_mode.py --config engagement.yml --input client-data/shelf.csv \
+    --out client-output [--final]
+```
+
+It computes own-brand vs competitor price per ounce by retailer and the OOS rate.
+**Honest provenance is mandatory:** client mode refuses to run without an explicit,
+client-attested `provenance` note (how/when the data was collected), which is
+printed on the deliverable — this tool never presents data as scraped that wasn't.
+Output to `client-output/` (gitignored): a branded, provenance-footed,
+DRAFT-watermarked `competitive-shelf-summary.html` + `summary.json`, or a Data
+Readiness Report if a required column or the provenance note is missing. The demo
+app is never edited (golden-locked).
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

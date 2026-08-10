@@ -1,0 +1,23 @@
+# Lailara LLC — Engagement config (DEMO). Canonical demo identity; demo: true so
+# the deploy guard ignores it. A real client run uses engagement.yml with the
+# client's own shelf observations and their own honest provenance note.
+client:
+  name: "Cinderhaven Provisions (demo)"
+engagement:
+  id: "CINDERHAVEN-DEMO"
+as_of_date: "2026-01-31"
+prepared_by: "Lailara LLC"
+demo: true
+# REQUIRED — an explicit, client-attested statement of where the shelf data came
+# from and when. Client mode refuses to run without it (no synthetic-as-scraped).
+provenance: "Synthetic demonstration dataset modeled on public Walmart and Amazon product pages — NOT live-scraped competitor data."
+basis:
+  own_brand: "Cinderhaven"
+columns:
+  retailer: "retailer"
+  brand: "brand"
+  product: "product"
+  price: "price"
+  pack_weight_oz: "pack_weight_oz"
+  observed_date: "observed_date"
+  in_stock: "in_stock"
