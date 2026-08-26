@@ -33,9 +33,12 @@ def create_layout() -> html.Div:
             html.Div(
                 style={"maxWidth": "1200px", "margin": "0 auto", "padding": "0 24px"},
                 children=[
-                    # Page title section
+                    # Page title section — text column shares one measure edge
+                    # (.ll-column) so the lede never wraps narrower than the H1.
                     html.Div(
-                        [
+                        html.Div(
+                            className="ll-column",
+                            children=[
                             html.Div(
                                 "LAILARA LLC",
                                 style={
@@ -70,7 +73,6 @@ def create_layout() -> html.Div:
                                     "fontSize": "17px",
                                     "lineHeight": "1.6",
                                     "color": TEXT,
-                                    "maxWidth": "660px",
                                     "margin": "0 0 6px",
                                 },
                             ),
@@ -85,7 +87,7 @@ def create_layout() -> html.Div:
                                     "margin": "0",
                                 },
                             ),
-                        ],
+                        ]),
                         style={
                             "padding": "24px 0 16px",
                             "borderBottom": f"1px solid {GREY_LIGHT}",

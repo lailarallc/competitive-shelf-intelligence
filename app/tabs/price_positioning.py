@@ -35,6 +35,7 @@ def layout() -> html.Div:
         html.P(
             "Price per ounce by brand and retailer, most expensive at top. "
             f"{OWN_BRAND} is positioned at the category median.",
+            className="ll-column",
             style={"fontSize": "14px", "color": TEXT_SEC, "marginBottom": "0"},
         ),
         html.Div(
