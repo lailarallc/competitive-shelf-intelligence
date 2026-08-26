@@ -21,6 +21,7 @@ def layout() -> html.Div:
             "New-entry and delist examples staged in the demonstration dataset. "
             "In production this compares each listing's presence across the two "
             "most recent scrape runs.",
+            className="ll-column",
             style={"fontSize": "14px", "color": TEXT_SEC, "marginBottom": "0"},
         ),
         html.Div(

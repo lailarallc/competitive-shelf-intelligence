@@ -27,6 +27,7 @@ def layout() -> html.Div:
         last_scraped_indicator(),
         html.P(
             "Promotional badges and price drops across brands and retailers.",
+            className="ll-column",
             style={"fontSize": "14px", "color": TEXT_SEC, "marginBottom": "0"},
         ),
         html.Div([

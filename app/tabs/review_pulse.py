@@ -26,6 +26,7 @@ def layout() -> html.Div:
         last_scraped_indicator(),
         html.P(
             "Star ratings and review count trends by brand and retailer.",
+            className="ll-column",
             style={"fontSize": "14px", "color": TEXT_SEC, "marginBottom": "0"},
         ),
         html.Div([
