@@ -29,6 +29,21 @@ app = Dash(
     suppress_callback_exceptions=True,
     title="Competitive Shelf Intelligence | Lailara LLC",
     update_title=None,
+    meta_tags=[
+        {"name": "description", "content": "Pricing, placement, and assortment movement across your retailers, every month, as a decision-ready brief."},
+        {"property": "og:title", "content": "Competitive Shelf Intelligence"},
+        {"property": "og:description", "content": "Pricing, placement, and assortment movement across your retailers, every month, as a decision-ready brief."},
+        {"property": "og:type", "content": "website"},
+        {"property": "og:url", "content": "https://competitive.lailarallc.com/"},
+        {"property": "og:image", "content": "https://lailarallc.com/og/s/competitive.png"},
+        {"property": "og:image:secure_url", "content": "https://lailarallc.com/og/s/competitive.png"},
+        {"property": "og:image:type", "content": "image/png"},
+        {"property": "og:image:width", "content": "1200"},
+        {"property": "og:image:height", "content": "630"},
+        {"property": "og:image:alt", "content": "Competitive Shelf Intelligence"},
+        {"name": "twitter:card", "content": "summary_large_image"},
+        {"name": "twitter:image", "content": "https://lailarallc.com/og/s/competitive.png"},
+    ],
 )
 server = app.server
 server.secret_key = os.environ.get("FLASK_SECRET_KEY") or _secrets.token_hex(32)
