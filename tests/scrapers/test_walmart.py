@@ -170,3 +170,31 @@ def test_price_drop_promo_is_always_false_from_scraper(scraper):
     html = _load("product_in_stock.html")
     product = scraper.parse_html(html, "https://www.walmart.com/ip/test/111", "111")
     assert product.price_drop_promo is False
+
+
+# ---------------------------------------------------------------------------
+# ScraperAPI errors must not leak the API key
+# ---------------------------------------------------------------------------
+
+
+def test_scraperapi_error_message_does_not_contain_api_key(scraper, monkeypatch):
+    """The failure text is logged and written to scrape_failures."""
+    import requests
+
+    fake_key = "testkey1234567890abcdef"
+    monkeypatch.setenv("SCRAPERAPI_KEY", fake_key)
+    monkeypatch.setattr(scraper, "_rate_limit", lambda: None)
+
+    def fake_get(*args, **kwargs):
+        raise requests.HTTPError(
+            f"500 Server Error for url: https://api.scraperapi.com/?api_key={fake_key}&url=x"
+        )
+
+    monkeypatch.setattr("src.scrapers.walmart._requests.get", fake_get)
+
+    with pytest.raises(ParseFailureError) as excinfo:
+        scraper._fetch_via_scraperapi("https://www.walmart.com/ip/test/1", "1")
+
+    assert fake_key not in str(excinfo.value)
+    assert excinfo.value.__cause__ is None
+    assert excinfo.value.__suppress_context__ is True

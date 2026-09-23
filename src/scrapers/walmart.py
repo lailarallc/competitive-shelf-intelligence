@@ -172,7 +172,13 @@ class WalmartScraper(BaseProductScraper):
             )
             resp.raise_for_status()
         except _requests.RequestException as exc:
-            raise ParseFailureError(f"ScraperAPI request failed for {url}: {exc}")
+            # requests puts the full request URL, api_key included, into the
+            # exception text; this message is logged and stored in
+            # scrape_failures, so strip the key and drop the chained exception.
+            detail = str(exc).replace(api_key, "***") if api_key else str(exc)
+            raise ParseFailureError(
+                f"ScraperAPI request failed for {url}: {detail}"
+            ) from None
         return self.parse_html(resp.text, url, retailer_id)
 
     # ------------------------------------------------------------------
