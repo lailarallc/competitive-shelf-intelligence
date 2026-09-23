@@ -122,3 +122,9 @@ Code review complete. Three confirmed P1 bugs to fix, five P2 issues, plus maint
 ### 2026-06-01 — Dependency audit (pip-audit 2.10.0)
 - **Result:** No known vulnerabilities found across all packages in requirements.txt
 - **Next audit:** 2026-08-01
+
+### 2026-09-23 — Audit (health check only)
+- **Findings:** 2 critical, 5 important, 2 nice-to-have
+- **Top concerns:** The Walmart scraper imports src/scrapers/google_shopping.py, which was deleted, so any scrape without SCRAPERAPI_KEY and a working camoufox crashes with ModuleNotFoundError. ScraperAPI request errors embed the full request URL (including the api_key query param) in the exception text, which is logged and written to scrape_failures.error_message. Dashboard query functions raise ValueError on an empty or unreachable DB instead of rendering empty states, and HANDOFF.md has no entry since 2026-06-23 despite the August client-mode/CI work.
+- **Action taken:** Audit only — no fixes this session
+- **Next review:** 2026-12-22
