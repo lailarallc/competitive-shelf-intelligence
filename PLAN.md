@@ -128,3 +128,11 @@ Code review complete. Three confirmed P1 bugs to fix, five P2 issues, plus maint
 - **Top concerns:** The Walmart scraper imports src/scrapers/google_shopping.py, which was deleted, so any scrape without SCRAPERAPI_KEY and a working camoufox crashes with ModuleNotFoundError. ScraperAPI request errors embed the full request URL (including the api_key query param) in the exception text, which is logged and written to scrape_failures.error_message. Dashboard query functions raise ValueError on an empty or unreachable DB instead of rendering empty states, and HANDOFF.md has no entry since 2026-06-23 despite the August client-mode/CI work.
 - **Action taken:** Audit only — no fixes this session
 - **Next review:** 2026-12-22
+
+## Later
+
+- **Production-DB guard (deferred 2026-09-30).** The fleet guard (`fleet-ops/prod_guard`) is not
+  vendored here. `src/db.py` would block the scraper on Fly (its DATABASE_URL is a `.flycast`/`.internal`
+  host). Do it when the Fly scraper cron actually exists: first `flyctl secrets set ALLOW_PROD_DB=1`
+  on the app, then guard `src/db.py` `get_pool()`. `scripts/_apply_schema.py` and `_patch_weight.py`
+  are gitignored (`scripts/_*.py`), so they can only be guarded locally.
