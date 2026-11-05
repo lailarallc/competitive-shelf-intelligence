@@ -88,7 +88,7 @@ then /office-hours, /plan-ceo-review, /plan-eng-review before building.
 - Promo, OOS, Assortment, Review tabs: query views that work against synthetic data
 
 **For a paying client (production-ready scraping):**
-- Walmart: residential proxy service ($30-50/month) — ScraperAPI was $49/month (no free tier)
+- Walmart: residential proxy service ($30-50/month) — ScraperAPI was $49/month (no free tier) <!-- label-ok: scraping-service cost for Walmart.com, not a Cinderhaven figure -->
 - Amazon: residential proxy + ScraperAPI renders anti-bot headers correctly
 - ScraperAPI key → set `SCRAPERAPI_KEY` in `flyctl secrets` and `src/scrapers/walmart.py` Transport 1 activates
 
