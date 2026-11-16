@@ -16,6 +16,17 @@ jobs:
       - name: Engagement guard
         run: python3 scripts/engagement_guard.py
 
+      # Publish gate: no real competitor brand in the repo, and every seeded competitor fictional.
+      # The live database is checked by scripts/owner_rename_live_brands.py, which the owner runs.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Brand-name gate
+        run: |
+          pip install pyyaml
+          python scripts/check_brand_names.py --self-test
+          python scripts/check_brand_names.py
+
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
       - run: flyctl deploy --remote-only

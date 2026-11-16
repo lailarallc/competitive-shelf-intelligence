@@ -19,6 +19,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install deps
-        run: pip install pandas flask-caching pytest
+        run: pip install pandas flask-caching pytest pyyaml
       - name: Demo golden
         run: python -m pytest tests/test_demo_golden.py -q
+      - name: Brand-name gate
+        run: |
+          python scripts/check_brand_names.py --self-test
+          python scripts/check_brand_names.py

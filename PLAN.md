@@ -50,7 +50,7 @@ food brand's price, promo, and availability stack up against them?
 - [x] Entity resolution strategy decided: how products are matched across Amazon and Walmart
 - [x] Amazon scraper runs manually and populates Postgres without errors
 - [x] Walmart.com scraper runs manually and populates Postgres without errors
-- [x] Competitor set defined — 5 brands × 2 retailers filled in (Yellowbird, Truff, Melinda's, Dave's Gourmet, Marie Sharp's)
+- [x] Competitor set defined — 5 brands × 2 retailers filled in (Competitor A, Competitor B, Competitor C, Competitor D, Competitor E)
 - [x] Dash dashboard shows: price positioning map, promo activity, OOS/availability, review pulse
 - [x] "Last scraped" timestamp visible on dashboard
 - [x] Scraper error handling: bad/missing data logged as warning, not silently inserted

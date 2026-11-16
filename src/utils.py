@@ -38,7 +38,7 @@ def parse_weight_oz(raw: Optional[str]) -> Optional[float]:
         "16 oz" → 16.0
         "1 lb" → 16.0
         "500g" → 17.64
-        "Yellowbird Sriracha 9.8 oz" → 9.8
+        "Competitor A Sriracha 9.8 oz" → 9.8
         "No weight info" → None
     """
     if not raw:

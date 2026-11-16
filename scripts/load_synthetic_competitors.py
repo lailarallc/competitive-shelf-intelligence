@@ -1,7 +1,8 @@
 """
-Load synthetic competitor price history for all 5 hot sauce brands.
+Load synthetic competitor price history for six fictional brands, Competitor A to Competitor F.
 
-Uses market-realistic prices based on publicly known retail pricing.
+The brands, product names, listing IDs and URLs are invented; competitors are always anonymized in Lailara output
+(naming rule). Base prices are modelled on public shelf prices for the category. Nothing here was scraped.
 Idempotent: safe to re-run; uses ON CONFLICT DO NOTHING for snapshots.
 
 Usage:
@@ -30,85 +31,84 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Realistic retail prices as of May 2026 (Amazon/Walmart parity)
-# (brand, product_name, weight_oz, walmart_id, amazon_id, base_price_cents, upc)
+# Fictional competitors. Base prices modelled on public category shelf prices, May 2026 (Amazon/Walmart parity).
+# Listing IDs and URLs are invented and resolve nowhere: the synthetic: scheme marks them.
 _COMPETITORS = [
     {
-        "brand": "Yellowbird",
-        "name": "Yellowbird Blue Agave Sriracha Hot Sauce 9.8 oz",
+        "brand": "Competitor A",
+        "name": "Competitor A Agave Sriracha Hot Sauce 9.8 oz",
         "weight_oz": 9.8,
-        "walmart_id": "794454518",
-        "walmart_url": "https://www.walmart.com/ip/Yellowbird-Sauce-Agave-Blue-Sriracha-9-8-Oz/794454518",
-        "amazon_id": "B01NCF5ULG",
-        "amazon_url": "https://www.amazon.com/Yellowbird-Sauce-Condiment-Agave-Sriracha/dp/B01NCF5ULG",
-        "base_price_cents": 749,   # $7.49
-        "upc": "856262005167",
-        # price already in db from real scrape — skip re-insert for today
-        "skip_today": False,
-    },
-    {
-        "brand": "Truff",
-        "name": "TRUFF Original Black Truffle Hot Sauce 6 oz",
-        "weight_oz": 6.0,
-        "walmart_id": "620880109",
-        "walmart_url": "https://www.walmart.com/ip/TRUFF-Original-Black-Truffle-Hot-Sauce-6-oz/620880109",
-        "amazon_id": "B07HMJWCNL",
-        "amazon_url": "https://www.amazon.com/TRUFF-Gourmet-Peppers-Truffle-Experience/dp/B07HMJWCNL",
-        "base_price_cents": 1799,  # $17.99 (premium)
-        "upc": "710051998057",
-        "skip_today": False,
-    },
-    {
-        "brand": "Melinda's",
-        "name": "Melinda's Original Habanero Hot Sauce 5 oz",
-        "weight_oz": 5.0,
-        "walmart_id": "927006219",
-        "walmart_url": "https://www.walmart.com/ip/Melinda-s-Original-Habanero-Hot-Sauce/927006219",
-        "amazon_id": "B005HJ038S",
-        "amazon_url": "https://www.amazon.com/dp/B005HJ038S",
-        "base_price_cents": 499,   # $4.99
-        "upc": "736924182811",
-        "skip_today": False,
-    },
-    {
-        "brand": "Dave's Gourmet",
-        "name": "Dave's Gourmet Original Insanity Hot Sauce 5 oz",
-        "weight_oz": 5.0,
-        "walmart_id": "30955208",
-        "walmart_url": "https://www.walmart.com/ip/Dave-s-Gourmet-Insanity-Hot-Sauce-5-Oz/30955208",
-        "amazon_id": "B0000DID5R",
-        "amazon_url": "https://www.amazon.com/dp/B0000DID5R",
-        "base_price_cents": 649,   # $6.49
-        "upc": "753469000011",
-        "skip_today": False,
-    },
-    {
-        "brand": "Marie Sharp's",
-        "name": "Marie Sharp's Fiery Hot Habanero Pepper Sauce 5 oz",
-        "weight_oz": 5.0,
-        "walmart_id": "10448878",
-        "walmart_url": "https://www.walmart.com/ip/Marie-Sharp-s-Fiery-Hot-Habanero-Pepper-Sauce/10448878",
-        "amazon_id": "B0014L1PPS",
-        "amazon_url": "https://www.amazon.com/Marie-Sharps-Fiery-Habanero-Pepper/dp/B0014L1PPS",
-        "base_price_cents": 699,   # $6.99
+        "walmart_id": "CSI-WM-A",
+        "walmart_url": "synthetic:walmart/CSI-WM-A",
+        "amazon_id": "CSI-AZ-A",
+        "amazon_url": "synthetic:amazon/CSI-AZ-A",
+        "base_price_cents": 749,
         "upc": "",
         "skip_today": False,
     },
     {
-        "brand": "Secret Aardvark",
-        "name": "Secret Aardvark Habanero Hot Sauce 8 oz",
+        "brand": "Competitor B",
+        "name": "Competitor B Black Truffle Hot Sauce 6 oz",
+        "weight_oz": 6.0,
+        "walmart_id": "CSI-WM-B",
+        "walmart_url": "synthetic:walmart/CSI-WM-B",
+        "amazon_id": "CSI-AZ-B",
+        "amazon_url": "synthetic:amazon/CSI-AZ-B",
+        "base_price_cents": 1799,
+        "upc": "",
+        "skip_today": False,
+    },
+    {
+        "brand": "Competitor C",
+        "name": "Competitor C Habanero Hot Sauce 5 oz",
+        "weight_oz": 5.0,
+        "walmart_id": "CSI-WM-C",
+        "walmart_url": "synthetic:walmart/CSI-WM-C",
+        "amazon_id": "CSI-AZ-C",
+        "amazon_url": "synthetic:amazon/CSI-AZ-C",
+        "base_price_cents": 499,
+        "upc": "",
+        "skip_today": False,
+    },
+    {
+        "brand": "Competitor D",
+        "name": "Competitor D Extra Hot Sauce 5 oz",
+        "weight_oz": 5.0,
+        "walmart_id": "CSI-WM-D",
+        "walmart_url": "synthetic:walmart/CSI-WM-D",
+        "amazon_id": "CSI-AZ-D",
+        "amazon_url": "synthetic:amazon/CSI-AZ-D",
+        "base_price_cents": 649,
+        "upc": "",
+        "skip_today": False,
+    },
+    {
+        "brand": "Competitor E",
+        "name": "Competitor E Habanero Pepper Sauce 5 oz",
+        "weight_oz": 5.0,
+        "walmart_id": "CSI-WM-E",
+        "walmart_url": "synthetic:walmart/CSI-WM-E",
+        "amazon_id": "CSI-AZ-E",
+        "amazon_url": "synthetic:amazon/CSI-AZ-E",
+        "base_price_cents": 699,
+        "upc": "",
+        "skip_today": False,
+    },
+    {
+        "brand": "Competitor F",
+        "name": "Competitor F Habanero Hot Sauce 8 oz",
         "weight_oz": 8.0,
-        "walmart_id": "SECRET001",
-        "walmart_url": "https://www.walmart.com/ip/Secret-Aardvark-Habanero/SECRET001",
-        "amazon_id": "B00AIR2Y0G",
-        "amazon_url": "https://www.amazon.com/dp/B00AIR2Y0G",
+        "walmart_id": "CSI-WM-F",
+        "walmart_url": "synthetic:walmart/CSI-WM-F",
+        "amazon_id": "CSI-AZ-F",
+        "amazon_url": "synthetic:amazon/CSI-AZ-F",
         "base_price_cents": 899,
         "upc": "",
         "skip_today": False,
     },
 ]
 
-_DELIST_WALMART_ID = "10448878"  # Marie Sharp's Walmart listing
+_DELIST_WALMART_ID = "CSI-WM-E"  # Competitor E's Walmart listing
 
 
 @click.command()
@@ -300,7 +300,7 @@ def _setup_assortment_demo(conn) -> None:
             (latest_run_id, today),
         )
 
-    ne = next(c for c in _COMPETITORS if c["brand"] == "Secret Aardvark")
+    ne = next(c for c in _COMPETITORS if c["brand"] == "Competitor F")
     brand_id = _upsert_brand(conn, ne["brand"])
     product_id = _upsert_product(conn, brand_id, ne)
     listing_id = _upsert_listing(conn, product_id, "walmart", ne["walmart_id"], ne["walmart_url"])
@@ -324,7 +324,7 @@ def _setup_assortment_demo(conn) -> None:
     )
     logger.info("Assortment demo: prior_run=%d, latest_run=%d", prior_run_id, latest_run_id)
     if delist_listing_id:
-        logger.info("Possible delist: listing_id=%d (Marie Sharp's Walmart)", delist_listing_id)
+        logger.info("Possible delist: listing_id=%d (Competitor E Walmart)", delist_listing_id)
     logger.info("New entry: %s", ne["name"])
 
 

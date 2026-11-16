@@ -149,7 +149,7 @@ def test_pack_size_raw_extracted_from_title(scraper):
 def test_extracts_upc_from_product_details_table(scraper):
     html = _load("product_in_stock.html")
     p = scraper.parse_html(html, _URL_TEMPLATE.format(asin="B07XXXXXXX1"), "B07XXXXXXX1")
-    assert p.upc == "850004924017"
+    assert p.upc == "040000000017"
 
 
 def test_upc_is_none_when_absent(scraper):
@@ -179,7 +179,7 @@ def test_returns_none_asin_when_url_has_no_dp_segment(scraper):
 def test_extracts_product_name(scraper):
     html = _load("product_in_stock.html")
     p = scraper.parse_html(html, _URL_TEMPLATE.format(asin="B07XXXXXXX1"), "B07XXXXXXX1")
-    assert p.product_name == "Yellowbird Blue Agave Hot Sauce 9.8 oz"
+    assert p.product_name == "Competitor A Agave Hot Sauce 9.8 oz"
 
 
 def test_retailer_is_amazon(scraper):

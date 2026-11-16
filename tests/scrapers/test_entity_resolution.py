@@ -21,9 +21,9 @@ def _make_scraped(
     *,
     retailer: str = "walmart",
     retailer_id: str = "12345678",
-    product_name: str = "Yellowbird Blue Agave 9.8 oz",
-    pack_size_raw: str = "Yellowbird Blue Agave 9.8 oz",
-    upc: str | None = "850004924017",
+    product_name: str = "Competitor A Agave 9.8 oz",
+    pack_size_raw: str = "Competitor A Agave 9.8 oz",
+    upc: str | None = "040000000017",
 ) -> ScrapedProduct:
     return ScrapedProduct(
         retailer=retailer,
@@ -49,7 +49,7 @@ def _make_conn(*cursor_side_effects):
 # ------------------------------------------------------------------
 
 def test_resolves_product_by_upc_when_upc_matches_existing():
-    scraped = _make_scraped(upc="850004924017")
+    scraped = _make_scraped(upc="040000000017")
     # cursor returns: products lookup → (42,), listing upsert → (99,)
     conn, cur = _make_conn((42,), (99,))
 
@@ -61,7 +61,7 @@ def test_resolves_product_by_upc_when_upc_matches_existing():
 
 def test_creates_new_listing_for_new_retailer_when_product_exists():
     # Same product on Amazon that already exists via Walmart UPC
-    scraped = _make_scraped(retailer="amazon", retailer_id="B07ABCDEF0", upc="850004924017")
+    scraped = _make_scraped(retailer="amazon", retailer_id="B07ABCDEF0", upc="040000000017")
     conn, cur = _make_conn((42,), (77,))
 
     product_id, listing_id = resolve_product(scraped, brand_id=1, product_url="https://amazon.com/dp/B07ABCDEF0", conn=conn)
@@ -130,7 +130,7 @@ def test_creates_new_product_when_no_match_found():
 
 
 def test_new_product_insert_uses_scraped_name_and_upc():
-    scraped = _make_scraped(product_name="Truff Original 6 oz", upc=None, pack_size_raw="Truff Original 6 oz")
+    scraped = _make_scraped(product_name="Competitor B Original 6 oz", upc=None, pack_size_raw="Competitor B Original 6 oz")
     conn, cur = _make_conn(None, None, (5,), (6,))
 
     resolve_product(scraped, brand_id=3, product_url="https://walmart.com/ip/5", conn=conn)
@@ -139,7 +139,7 @@ def test_new_product_insert_uses_scraped_name_and_upc():
     insert_call_args = cur.execute.call_args_list[2]
     sql, params = insert_call_args[0]
     assert "INSERT INTO products" in sql
-    assert params[1] == "Truff Original 6 oz"  # canonical_name
+    assert params[1] == "Competitor B Original 6 oz"  # canonical_name
 
 
 # ------------------------------------------------------------------
@@ -148,10 +148,10 @@ def test_new_product_insert_uses_scraped_name_and_upc():
 
 def test_links_amazon_and_walmart_listing_to_same_canonical_product_via_upc():
     # Walmart scraped first; product_id = 7. Now Amazon scrape with same UPC.
-    amazon_scraped = _make_scraped(retailer="amazon", retailer_id="B0TRUFF001", upc="850012345678")
+    amazon_scraped = _make_scraped(retailer="amazon", retailer_id="B0COMPB001", upc="850012345678")
     conn, cur = _make_conn((7,), (30,))  # UPC hit → product 7, new amazon listing → 30
 
-    product_id, listing_id = resolve_product(amazon_scraped, brand_id=1, product_url="https://amazon.com/dp/B0TRUFF001", conn=conn)
+    product_id, listing_id = resolve_product(amazon_scraped, brand_id=1, product_url="https://amazon.com/dp/B0COMPB001", conn=conn)
 
     assert product_id == 7  # same canonical product as the Walmart listing
     assert listing_id == 30

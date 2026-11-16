@@ -66,12 +66,12 @@ then /office-hours, /plan-ceo-review, /plan-eng-review before building.
 
 **Did:**
 - Provisioned Fly Postgres (`competitive-shelf-pg`), applied schema via psycopg2 proxy (no local psql)
-- Filled all competitor URLs in `config/products.yaml` (Yellowbird, Truff, Melinda's, Dave's Gourmet, Marie Sharp's)
+- Filled all competitor URLs in `config/products.yaml` (Competitor A, Competitor B, Competitor C, Competitor D, Competitor E)
 - Discovered Walmart and Amazon both block scrapes from Fly data center IPs regardless of browser type; camoufox (Firefox stealth) also blocked at the IP layer
 - Implemented camoufox + Google Shopping fallback in `src/scrapers/walmart.py`; camoufox works on Linux but fails on Windows (Microsoft Store Python UWP sandboxing); Google Shopping returns JS-only shell to plain requests → both fallbacks non-functional from data center
-- Scraped 1 real Yellowbird Amazon row locally (before Amazon CAPTCHA started blocking)
+- Scraped 1 real Competitor A Amazon row locally (before Amazon CAPTCHA started blocking)
 - Loaded 300-row Cinderhaven synthetic history (5 SKUs × 2 retailers × 30 days) via `scripts/load_synthetic.py`
-- Added `scripts/load_synthetic_competitors.py` — seeds 30-day price history for all 5 competitors at market-realistic prices (Truff $17.99, Marie Sharp's $6.99, Dave's $6.49, Yellowbird $7.49, Melinda's $4.99)
+- Added `scripts/load_synthetic_competitors.py` — seeds 30-day price history for all 5 competitors at market-realistic prices (Competitor B $17.99, Competitor E $6.99, Competitor D $6.49, Competitor A $7.49, Competitor C $4.99)
 - Fixed `app/data.py` `get_latest_price_per_oz()` — was querying `v_latest_snapshot_per_product` for `brand_name`/`price_per_oz` columns that don't exist on that view; query now JOINs products+brands and computes price_per_oz inline
 - Fixed `app/components.py` `strftime("%-d")` → `ts.day` (Windows cross-platform)
 - Fixed `scrape.py` pack_weight_oz UPDATE-before-INSERT ordering bug
@@ -81,7 +81,7 @@ then /office-hours, /plan-ceo-review, /plan-eng-review before building.
 **DB state (Fly Postgres):**
 - 600 total snapshots: 300 Cinderhaven + 60 per competitor × 5 brands
 - 6 brands, 20 SKU/retailer combinations, 30-day history each
-- price range: Cinderhaven/Yellowbird $0.76/oz → Truff $3.04/oz
+- price range: Cinderhaven/Competitor A $0.76/oz → Competitor B $3.04/oz
 
 **Dashboard live at:** https://competitive-shelf-intelligence.fly.dev
 - Price Positioning tab: horizontal dot chart, all 6 brands, Walmart vs Amazon
@@ -140,7 +140,7 @@ Accepted risks: autocommit partial state, rate-limit per-instance, SSRF via conf
 
 Part 1 — Data fix:
 - Extended synthetic data default from 30 to 90 days in both loaders
-- Added `_setup_assortment_demo()` in competitor loader — creates 2 scrape runs, Marie Sharp's delist, Secret Aardvark new entry
+- Added `_setup_assortment_demo()` in competitor loader — creates 2 scrape runs, Competitor E delist, Competitor F new entry
 - Fixed promo flags: split into badge_promos (~60%) and price_drop_promos (~40%) — were all False before
 - Fixed OOS flags: increased OOS count formula
 - Fixed RadioItems int coercion bug (string "90" not in frozenset of ints)
@@ -172,7 +172,7 @@ Part 3 — Bug fixes found during verification:
 
 **DB state (Fly Postgres):**
 - 1,801 total snapshots (Mar 26 – Jun 23, 2026)
-- 7 brands (6 original + Secret Aardvark), 21 listings
+- 7 brands (6 original + Competitor F), 21 listings
 - 80 promo events (badge + price-drop), 70 OOS events
 - 2 scrape runs for Assortment Monitor demo
 
@@ -204,15 +204,15 @@ Part 3 — Bug fixes found during verification:
 
 ---
 
-## 2026-06-23 — Fix Secret Aardvark single-data-point charts
+## 2026-06-23 — Fix Competitor F single-data-point charts
 
-**Started from:** Secret Aardvark had only 1 day of history (Assortment Monitor demo only), causing garbage Plotly axis labels.
+**Started from:** Competitor F had only 1 day of history (Assortment Monitor demo only), causing garbage Plotly axis labels.
 
-**Did:** Moved Secret Aardvark from standalone `_NEW_ENTRY` dict into `_COMPETITORS` list for full 90-day × 2-retailer history. Updated `_setup_assortment_demo()` reference. Deployed, cleared, reseeded (1980 snapshots). Category median shifted $1.31 → $1.21 with Secret Aardvark in the pool.
+**Did:** Moved Competitor F from standalone `_NEW_ENTRY` dict into `_COMPETITORS` list for full 90-day × 2-retailer history. Updated `_setup_assortment_demo()` reference. Deployed, cleared, reseeded (1980 snapshots). Category median shifted $1.31 → $1.21 with Competitor F in the pool.
 
 **State:** All 7 brands have full 90-day history. 1980 snapshots. All tabs rendering. 100/100 tests. Deployed and pushed.
 
-**Next:** Visually verify all tabs — Secret Aardvark charts in Review Pulse (normal date axes), Assortment Monitor still showing "New Entry." Improvement review due 2026-06-28.
+**Next:** Visually verify all tabs — Competitor F charts in Review Pulse (normal date axes), Assortment Monitor still showing "New Entry." Improvement review due 2026-06-28.
 
 ---
 

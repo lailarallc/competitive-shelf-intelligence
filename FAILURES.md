@@ -123,7 +123,7 @@ IPs, transparent to our HTML parsing code.
 
 **Attempted:** `python scrape.py --retailer amazon` on Fly.io machine (IAD data center IP).
 
-**Why it didn't work:** Amazon returned CAPTCHA/access-denied on the first request to TRUFF's ASIN URL. Scraper correctly raised `BlockDetectedError` and halted the run (0 scraped, 1 failed). Same IP-layer block as Walmart — data center ranges are flagged before any browser fingerprint evaluation.
+**Why it didn't work:** Amazon returned CAPTCHA/access-denied on the first request to Competitor B's ASIN URL. Scraper correctly raised `BlockDetectedError` and halted the run (0 scraped, 1 failed). Same IP-layer block as Walmart — data center ranges are flagged before any browser fingerprint evaluation.
 
 **What we tried instead:** No alternative transport for Amazon yet. Real Amazon scraping requires ScraperAPI (`SCRAPERAPI_KEY`) or a residential proxy.
 

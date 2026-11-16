@@ -1,86 +1,23 @@
 # Tracked competitor products
 #
-# HOW TO ADD A PRODUCT:
+# This file ships empty. Real competitor products belong in an engagement's private copy, never in this public
+# repo: competitors are always anonymized in Lailara output (naming rule, cinderhaven-data-realism
+# 01-purpose-and-target-design.md:38). The demo's competitors are fictional ("Competitor A" to "Competitor F")
+# and are seeded by scripts/load_synthetic_competitors.py, not scraped. scripts/check_brand_names.py fails CI
+# and blocks the deploy if a real competitor brand appears in any tracked file.
+#
+# HOW TO ADD A PRODUCT (in an engagement's private copy):
 #   1. Find the product on Walmart.com or Amazon.com
 #   2. Copy the full product URL
 #   3. Get the retailer_id: Walmart item ID is in the URL (/ip/.../XXXXXXXX)
 #      Amazon ASIN is the 10-character ID in the URL (/dp/XXXXXXXXXX)
-#   4. Add a new entry below following the same format
-#   5. UPC is optional but helps link the same product across retailers
+#   4. Add an entry in this format:
+#
+#   - name: "<product title> 9.8 oz"
+#     brand: "<brand>"
+#     retailer: walmart            # or amazon
+#     url: "https://www.walmart.com/ip/<slug>/<item id>"
+#     retailer_id: "<item id>"
+#     upc: ""                      # optional; links the same product across retailers
 
-products:
-  # --- Yellowbird ---
-  - name: "Yellowbird Blue Agave Sriracha Hot Sauce 9.8 oz"
-    brand: "Yellowbird"
-    retailer: walmart
-    url: "https://www.walmart.com/ip/Yellowbird-Sauce-Agave-Blue-Sriracha-9-8-Oz/794454518"
-    retailer_id: "794454518"
-    upc: "856262005167"
-
-  - name: "Yellowbird Blue Agave Sriracha Hot Sauce 9.8 oz"
-    brand: "Yellowbird"
-    retailer: amazon
-    url: "https://www.amazon.com/Yellowbird-Sauce-Condiment-Agave-Sriracha/dp/B01NCF5ULG"
-    retailer_id: "B01NCF5ULG"
-    upc: "856262005167"
-
-  # --- Truff ---
-  - name: "TRUFF Original Black Truffle Hot Sauce 6 oz"
-    brand: "Truff"
-    retailer: walmart
-    url: "https://www.walmart.com/ip/TRUFF-Original-Black-Truffle-Hot-Sauce-6-oz/620880109"
-    retailer_id: "620880109"
-    upc: "710051998057"
-
-  - name: "TRUFF Original Black Truffle Hot Sauce 6 oz"
-    brand: "Truff"
-    retailer: amazon
-    url: "https://www.amazon.com/TRUFF-Gourmet-Peppers-Truffle-Experience/dp/B07HMJWCNL"
-    retailer_id: "B07HMJWCNL"
-    upc: "710051998057"
-
-  # --- Melinda's ---
-  # Note: Original Habanero only comes in 5 oz — no 12 oz SKU exists.
-  - name: "Melinda's Original Habanero Hot Sauce 5 oz"
-    brand: "Melinda's"
-    retailer: walmart
-    url: "https://www.walmart.com/ip/Melinda-s-Original-Habanero-Hot-Sauce/927006219"
-    retailer_id: "927006219"
-    upc: "736924182811"
-
-  - name: "Melinda's Original Habanero Hot Sauce 5 oz"
-    brand: "Melinda's"
-    retailer: amazon
-    url: "https://www.amazon.com/dp/B005HJ038S"
-    retailer_id: "B005HJ038S"
-    upc: "736924182811"
-
-  # --- Dave's Gourmet ---
-  - name: "Dave's Gourmet Original Insanity Hot Sauce 5 oz"
-    brand: "Dave's Gourmet"
-    retailer: walmart
-    url: "https://www.walmart.com/ip/Dave-s-Gourmet-Insanity-Hot-Sauce-5-Oz/30955208"
-    retailer_id: "30955208"
-    upc: "753469000011"
-
-  - name: "Dave's Gourmet Original Insanity Hot Sauce 5 oz"
-    brand: "Dave's Gourmet"
-    retailer: amazon
-    url: "https://www.amazon.com/dp/B0000DID5R"
-    retailer_id: "B0000DID5R"
-    upc: "753469000011"
-
-  # --- Marie Sharp's ---
-  - name: "Marie Sharp's Fiery Hot Habanero Pepper Sauce 5 oz"
-    brand: "Marie Sharp's"
-    retailer: walmart
-    url: "https://www.walmart.com/ip/Marie-Sharp-s-Fiery-Hot-Habanero-Pepper-Sauce/10448878"
-    retailer_id: "10448878"
-    upc: ""
-
-  - name: "Marie Sharp's Fiery Hot Habanero Pepper Sauce 5 oz"
-    brand: "Marie Sharp's"
-    retailer: amazon
-    url: "https://www.amazon.com/Marie-Sharps-Fiery-Habanero-Pepper/dp/B0014L1PPS"
-    retailer_id: "B0014L1PPS"
-    upc: ""
+products: []

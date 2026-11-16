@@ -96,7 +96,7 @@ Each entry:
 - **Do not:** Expect camoufox or Google Shopping to return real data from any hosted environment without a residential proxy. For a paying client, set `SCRAPERAPI_KEY` (transport 1 activates) or add a `PROXY_URL` residential proxy.
 
 ### 2026-05-28 — Demo uses synthetic competitor price history
-- **Why:** Walmart and Amazon both block scrapes from Fly.io data center IPs at the network layer regardless of browser stealth. Rather than delay the demo, seeded 30-day price history for all 5 competitors at market-realistic prices (Truff $17.99/6oz, Marie Sharp's $6.99/5oz, Dave's $6.49/5oz, Yellowbird $7.49/9.8oz, Melinda's $4.99/5oz) using `scripts/load_synthetic_competitors.py`.
+- **Why:** Walmart and Amazon both block scrapes from Fly.io data center IPs at the network layer regardless of browser stealth. Rather than delay the demo, seeded 30-day price history for all 5 competitors at market-realistic prices (Competitor B $17.99/6oz, Competitor E $6.99/5oz, Competitor D $6.49/5oz, Competitor A $7.49/9.8oz, Competitor C $4.99/5oz) using `scripts/load_synthetic_competitors.py`.
 - **Scope:** Demo database only. Real scraping replaces synthetic data when a client engages and a proxy key is obtained.
 
 ### 2026-05-28 — Lead-gen assets out of scope for this project

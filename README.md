@@ -29,8 +29,8 @@ cp .env.example .env
 psql $DATABASE_URL -f db/schema.sql
 
 # 4. Add competitor product URLs
-# Edit config/products.yaml — replace REPLACE_WITH_* placeholders
-# with real Walmart and Amazon product URLs
+# config/products.yaml ships empty. Add real products only in an
+# engagement's private copy: this public repo names no real competitor.
 
 # 5. Run a scrape
 python scrape.py                   # all retailers

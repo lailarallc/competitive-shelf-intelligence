@@ -27,7 +27,7 @@ def test_parses_common_weight_units(raw, expected):
 
 
 def test_extracts_weight_from_product_title():
-    title = "Yellowbird Blue Agave Sriracha Hot Sauce 9.8 oz"
+    title = "Competitor A Agave Sriracha Hot Sauce 9.8 oz"
     assert parse_weight_oz(title) == 9.8
 
 

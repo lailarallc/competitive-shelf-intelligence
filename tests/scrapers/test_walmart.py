@@ -33,14 +33,14 @@ def test_extracts_price_from_next_data_json(scraper):
 def test_extracts_product_name(scraper):
     html = _load("product_in_stock.html")
     product = scraper.parse_html(html, "https://www.walmart.com/ip/test/111", "111")
-    assert "Yellowbird" in product.product_name
+    assert "Competitor A" in product.product_name
     assert "Sriracha" in product.product_name
 
 
 def test_extracts_upc_from_next_data(scraper):
     html = _load("product_in_stock.html")
     product = scraper.parse_html(html, "https://www.walmart.com/ip/test/111", "111")
-    assert product.upc == "853826007254"
+    assert product.upc == "040000000024"
 
 
 def test_extracts_star_rating_and_review_count(scraper):

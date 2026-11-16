@@ -184,7 +184,7 @@ def test_returns_true_when_prove_you_are_human_text(scraper):
 
 def test_returns_false_for_normal_product_page(scraper):
     normal_page = _mock_page(
-        "<html><body><h1>Yellowbird Sriracha</h1><p>$8.99</p></body></html>"
+        "<html><body><h1>Competitor A Sriracha</h1><p>$8.99</p></body></html>"
     )
     response = _mock_response(status=200)
     assert scraper._detect_block(response, normal_page) is False

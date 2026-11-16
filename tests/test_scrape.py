@@ -39,10 +39,10 @@ def _in_stock_product(retailer: str = "walmart", retailer_id: str = "12345") -> 
     return ScrapedProduct(
         retailer=retailer,
         retailer_id=retailer_id,
-        product_name="Yellowbird Blue Agave 9.8 oz",
+        product_name="Competitor A Agave 9.8 oz",
         current_price=8.97,
-        pack_size_raw="Yellowbird Blue Agave 9.8 oz",
-        upc="850004924017",
+        pack_size_raw="Competitor A Agave 9.8 oz",
+        upc="040000000017",
     )
 
 
@@ -69,11 +69,11 @@ def test_finish_scrape_run_sets_complete_status():
 
 def test_get_or_create_brand_returns_id():
     conn, cur = _make_cursor_conn((7,))
-    brand_id = _get_or_create_brand(conn, "Yellowbird")
+    brand_id = _get_or_create_brand(conn, "Competitor A")
     assert brand_id == 7
     sql, params = cur.execute.call_args[0]
     assert "INSERT INTO brands" in sql
-    assert params == ("Yellowbird",)
+    assert params == ("Competitor A",)
 
 
 def test_check_price_drop_returns_true_when_price_decreased():

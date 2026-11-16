@@ -12,5 +12,5 @@
 -- INSERT INTO canonical_product_map
 --     (walmart_listing_id, amazon_listing_id, canonical_product_id, note, created_by)
 -- VALUES
---     (NULL, NULL, NULL, 'example: Yellowbird Blue Agave 9.8oz (Walmart) = ASIN B07XXXXX (Amazon)', 'operator')
+--     (NULL, NULL, NULL, 'example: Competitor A Agave 9.8oz (Walmart) = ASIN B07XXXXX (Amazon)', 'operator')
 -- ON CONFLICT DO NOTHING;
