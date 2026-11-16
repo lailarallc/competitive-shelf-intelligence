@@ -1,0 +1,11 @@
+# Typed figures this repo prints with no canon key (owner, 2026-11-15; plan U19, U22).
+# One row per figure per location. The platform's fleet check holds the row count to a ceiling that only
+# falls: give a figure a key (or stop printing it) and delete its row. listed=yes: the read map names it, and
+# U19 owes its key; listed=no: U22 works it down. Generated from the 2026-11-15 manifest pass.
+file_line	printed	exact_value	meaning	source	kind	listed
+lailara_frame.py:13	Trailing 13 weeks	13	footer data window, weeks (docstring example)	prose only	prose-only	no
+scripts/load_synthetic.py:187	random.uniform(0.80, 0.92)	0.8	Cinderhaven synthetic promo price as share of base price (range 0.80-0.92)	constant scripts/load_synthetic.py:187	assumption	no
+scripts/load_synthetic.py:215	random.uniform(4.1, 4.8)	4.1	Cinderhaven synthetic star rating (range 4.1-4.8)	constant scripts/load_synthetic.py:215	assumption	no
+scripts/load_synthetic.py:37	weight_oz: 8.0	8	pack size oz, invented SKU Original Hot Sauce (not in canon catalogue)	constant scripts/load_synthetic.py:37; price = scraped category median price/oz x weight (line 79)	assumption	no
+scripts/load_synthetic.py:38	weight_oz: 12.0	12	pack size oz, invented SKU Smoked Jalapeno Sauce (not in canon catalogue)	constant scripts/load_synthetic.py:38	assumption	no
+scripts/load_synthetic.py:40	weight_oz: 10.0	10	pack size oz, invented SKU Chipotle Blend (not in canon catalogue)	constant scripts/load_synthetic.py:40	assumption	no
