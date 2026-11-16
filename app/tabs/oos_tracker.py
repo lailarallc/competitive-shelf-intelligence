@@ -36,7 +36,7 @@ def layout() -> html.Div:
             html.Div(id=CALLOUT_ID),
             dcc.Graph(id=HEATMAP_ID, config={"displayModeBar": False}),
             chart_footnote(
-                "Source: demonstration dataset (Walmart and Amazon). A filled cell "
+                "Source: synthetic demonstration dataset (two retailer sites, invented competitor names). A filled cell "
                 "marks a day a listing was recorded out of stock. Estimated lost "
                 "revenue is prorated by the share of the brand's SKUs out of stock."
             ),
@@ -69,7 +69,7 @@ def register_callbacks(app) -> None:
 
 
 def _build_heatmap(df: pd.DataFrame) -> go.Figure:
-    df["label"] = df["brand_name"] + " / " + df["product_name"].str[:30] + " (" + df["retailer"].str.title() + ")"
+    df["label"] = df["product_name"].str[:40] + " (" + df["retailer"] + ")"
     labels = sorted(df["label"].unique())
     dates  = sorted(df["scraped_date"].unique())
 

@@ -33,7 +33,7 @@ def layout() -> html.Div:
             date_range_toggles("review"),
             html.Div(id=CONTAINER_ID),
             chart_footnote(
-                "Source: demonstration dataset (Walmart and Amazon). Star ratings "
+                "Source: synthetic demonstration dataset (two retailer sites, invented competitor names). Star ratings "
                 "and review counts by scrape date."
             ),
         ], style={
@@ -242,7 +242,7 @@ def _hero_rating(df: pd.DataFrame) -> go.Figure:
         sub = sub.sort_values("scraped_date")
         fig.add_trace(go.Scatter(
             x=sub["scraped_date"], y=sub["avg_star_rating"],
-            mode="lines+markers", name=retailer.title(),
+            mode="lines+markers", name=retailer,
             line=dict(color=CHART_PALETTE[i % len(CHART_PALETTE)], width=2),
             marker=dict(size=4),
             hovertemplate="%{x}: %{y:.2f} stars<extra></extra>",
@@ -267,7 +267,7 @@ def _hero_reviews(df: pd.DataFrame) -> go.Figure:
         sub = sub.sort_values("scraped_date")
         fig.add_trace(go.Bar(
             x=sub["scraped_date"], y=sub["max_review_count"],
-            name=retailer.title(),
+            name=retailer,
             marker_color=CHART_PALETTE[i % len(CHART_PALETTE)],
             hovertemplate="%{x}: %{y:,} reviews<extra></extra>",
         ))
@@ -287,7 +287,7 @@ def _compact_rating(df: pd.DataFrame) -> go.Figure:
         sub = sub.sort_values("scraped_date")
         fig.add_trace(go.Scatter(
             x=sub["scraped_date"], y=sub["avg_star_rating"],
-            mode="lines", name=retailer.title(), showlegend=False,
+            mode="lines", name=retailer, showlegend=False,
             line=dict(color=CHART_PALETTE[i % len(CHART_PALETTE)], width=1.5),
             hovertemplate="%{x}: %{y:.2f}<extra></extra>",
         ))
@@ -310,7 +310,7 @@ def _compact_reviews(df: pd.DataFrame) -> go.Figure:
         sub = sub.sort_values("scraped_date")
         fig.add_trace(go.Bar(
             x=sub["scraped_date"], y=sub["max_review_count"],
-            name=retailer.title(), showlegend=False,
+            name=retailer, showlegend=False,
             marker_color=CHART_PALETTE[i % len(CHART_PALETTE)],
             hovertemplate="%{x}: %{y:,}<extra></extra>",
         ))
@@ -329,7 +329,7 @@ def _modal_rating(df: pd.DataFrame) -> go.Figure:
         sub = sub.sort_values("scraped_date")
         fig.add_trace(go.Scatter(
             x=sub["scraped_date"], y=sub["avg_star_rating"],
-            mode="lines+markers", name=retailer.title(),
+            mode="lines+markers", name=retailer,
             line=dict(color=CHART_PALETTE[i % len(CHART_PALETTE)], width=2),
             marker=dict(size=5),
             hovertemplate="%{x}: %{y:.2f} stars<extra></extra>",
@@ -354,7 +354,7 @@ def _modal_reviews(df: pd.DataFrame) -> go.Figure:
         sub = sub.sort_values("scraped_date")
         fig.add_trace(go.Bar(
             x=sub["scraped_date"], y=sub["max_review_count"],
-            name=retailer.title(),
+            name=retailer,
             marker_color=CHART_PALETTE[i % len(CHART_PALETTE)],
             hovertemplate="%{x}: %{y:,} reviews<extra></extra>",
         ))

@@ -28,7 +28,7 @@ def layout() -> html.Div:
             [
                 html.Div(id=TABLE_ID),
                 chart_footnote(
-                    "Source: demonstration dataset (Walmart and Amazon). New-entry "
+                    "Source: synthetic demonstration dataset (two retailer sites, invented competitor names). New-entry "
                     "and delist rows are staged illustrative examples, not live detections."
                 ),
             ],
@@ -64,7 +64,6 @@ def _build_table(df: pd.DataFrame) -> dag.AgGrid:
         "last_seen_at": "Last Seen",
         "status": "Status",
     }).copy()
-    display["Retailer"] = display["Retailer"].str.title()
     for col in ["First Seen", "Last Seen"]:
         if col in display.columns:
             display[col] = pd.to_datetime(display[col]).dt.strftime("%Y-%m-%d")
