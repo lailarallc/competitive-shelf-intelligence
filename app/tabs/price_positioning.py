@@ -1,7 +1,7 @@
 """Price Positioning tab — horizontal bar chart, price per oz by brand × retailer.
 
-One row per brand, sorted most expensive at top. Two bars per brand: Amazon (teal)
-and Walmart (navy). Cinderhaven bars carry a bold INK outline to stand out.
+One row per brand, sorted most expensive at top. Two bars per brand: online marketplace (teal)
+and mass retailer site (navy). Cinderhaven bars carry a bold INK outline to stand out.
 """
 
 from __future__ import annotations
@@ -10,12 +10,13 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import Input, Output, dcc, html
 
+from app.anonymize import MARKETPLACE, MASS_SITE
 from app.charts import base_chart_layout
 from app.components import chart_footnote, last_scraped_indicator
 from app.constants import (
     CANVAS,
-    COLOR_AMAZON,
-    COLOR_WALMART,
+    COLOR_MARKETPLACE,
+    COLOR_MASS_SITE,
     FONT_SANS,
     FONT_SERIF,
     GREY_LIGHT,
@@ -42,8 +43,8 @@ def layout() -> html.Div:
             [
                 dcc.Graph(id=GRAPH_ID, config={"displayModeBar": False}),
                 chart_footnote(
-                    "Source: demonstration dataset modeled on public Walmart and "
-                    "Amazon product pages. Bars show each listing's regular "
+                    "Source: synthetic demonstration dataset. Competitor names "
+                    "are invented. Bars show each listing's regular "
                     "(non-promotional) price per ounce."
                 ),
             ],
@@ -95,8 +96,8 @@ def _build_figure(df: pd.DataFrame) -> go.Figure:
     fig = go.Figure()
 
     for retailer, color, label in [
-        ("amazon",  COLOR_AMAZON,  "Amazon"),
-        ("walmart", COLOR_WALMART, "Walmart"),
+        (MARKETPLACE, COLOR_MARKETPLACE, MARKETPLACE),
+        (MASS_SITE, COLOR_MASS_SITE, MASS_SITE),
     ]:
         sub = df[df["retailer"] == retailer].set_index("brand_name")
 

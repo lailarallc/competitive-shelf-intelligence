@@ -40,7 +40,7 @@ def layout() -> html.Div:
             ),
             html.Div(id=SUMMARY_ID),
             chart_footnote(
-                "Source: demonstration dataset (Walmart and Amazon). Promo depth = "
+                "Source: synthetic demonstration dataset (two retailer sites, invented competitor names). Promo depth = "
                 "(regular price − promotional price) ÷ regular price."
             ),
         ], style={
@@ -75,7 +75,7 @@ def register_callbacks(app) -> None:
 
 
 def _build_heatmap(df: pd.DataFrame) -> go.Figure:
-    df["label"] = df["brand_name"] + " (" + df["retailer"].str.title() + ")"
+    df["label"] = df["brand_name"] + " (" + df["retailer"] + ")"
     labels = sorted(df["label"].unique())
     dates  = sorted(df["scraped_date"].unique())
 
@@ -107,7 +107,6 @@ def _build_heatmap(df: pd.DataFrame) -> go.Figure:
 def _build_summary(df: pd.DataFrame) -> dag.AgGrid:
     display_df = df.copy()
     display_df.columns = ["Brand", "Retailer", "Promo Events", "Avg Depth (%)"]
-    display_df["Retailer"] = display_df["Retailer"].str.title()
     display_df["Avg Depth (%)"] = display_df["Avg Depth (%)"].apply(
         lambda v: f"{v:.1f}%" if pd.notna(v) else "—"
     )

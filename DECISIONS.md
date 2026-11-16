@@ -127,6 +127,14 @@ Each entry:
 - **Scope:** `app/tabs/price_positioning.py`
 - **Do not:** Revert to scatter plot or dot plot without explicit user instruction.
 
+### 2026-11-16 — Public dashboard shows invented competitor names and retailer role labels
+- **Why:** The demo drew real competitor brand names and two real retailer names beside synthetic prices, promotions, out-of-stock events and review figures. Synthetic figures attributed to real companies read as facts about them. Owner call: invent the names and keep the scrape-and-transform story honest.
+- **What:** `app/anonymize.py` swaps every brand, product and retailer name at the data layer (`@_public_names` on each query in `app/data.py`), so the swap holds for whatever the database contains: synthetic rows today, scraped rows if live scraping is ever switched on. A brand with no alias renders as `Competitor XXXX`, never its own name. Cinderhaven is unchanged.
+- **Banner:** says the data is synthetic, names are invented, the scraper is built and tested on saved pages, and it is not running on the demo. The page must not claim live scraping while the 2026-05-28 synthetic-demo decision stands.
+- **Scope:** `app/` only. The database, `config/products.yaml`, the loaders and the scrapers still hold source names because the scraper needs real targets. Client mode is untouched: a client sees their own data under real names.
+- **Do not:** Draw a `brand_name`, `product_name` or `retailer` value that has not passed through `app/anonymize.py`. `tests/test_anonymize.py` enforces this.
+- **Names:** screened by web search, recorded in `docs/name-screen.md`. Not a trademark clearance.
+
 ## Reversed / Superseded
 
 When a decision is overturned:
