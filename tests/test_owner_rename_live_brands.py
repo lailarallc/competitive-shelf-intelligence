@@ -38,14 +38,17 @@ def conn():
             INSERT INTO products (id, brand_id, canonical_name, pack_size_raw, pack_weight_oz, upc) VALUES
               (10, 1, 'Zeta Sauce Co Blue Agave 9.8 oz', 'Zeta Sauce Co Blue Agave 9.8 oz', 9.8, '123'),
               (11, 1, 'Zeta Sauce Co Serrano 9.8 oz', 'Zeta Sauce Co Serrano 9.8 oz', 9.8, NULL),
+              (12, 1, 'Zeta Sauce Co Agave Hot Sauce 9.8 oz', 'Zeta Sauce Co Agave Hot Sauce 9.8 oz', 9.8, '123'),
               (20, 2, 'QUILL Black Truffle 6 oz', 'QUILL Black Truffle 6 oz', 6, NULL),
               (30, 3, 'Cinderhaven Original 8 oz', 'Cinderhaven Original 8 oz', 8, NULL);
             INSERT INTO retailer_listings (id, product_id, retailer, retailer_id, product_url) VALUES
               (100, 10, 'walmart', '794', 'https://www.walmart.com/ip/Zeta-Sauce-Co-Agave/794'),
-              (101, 10, 'amazon', 'B01X', 'https://www.amazon.com/Zeta-Sauce-Co/dp/B01X'),
+              (101, 12, 'amazon', 'B01X', 'https://www.amazon.com/Zeta-Sauce-Co/dp/B01X'),
               (110, 11, 'amazon', 'B02X', 'https://www.amazon.com/Zeta-Sauce-Co-Serrano/dp/B02X'),
               (200, 20, 'walmart', '620', 'https://www.walmart.com/ip/QUILL/620'),
               (300, 30, 'synthetic', 'CIN-1', 'synthetic://cinderhaven/1');
+            INSERT INTO canonical_product_map (walmart_listing_id, amazon_listing_id, canonical_product_id, note)
+              VALUES (100, 101, 12, 'Zeta Sauce Co agave, both retailers');
             INSERT INTO scrape_runs (id, retailer, status) VALUES (1, 'amazon', 'complete');
             INSERT INTO scrape_failures (scrape_run_id, listing_id, retailer, url, error_message)
               VALUES (1, 110, 'amazon', 'https://www.amazon.com/Zeta-Sauce-Co-Serrano/dp/B02X', 'captcha');
@@ -88,7 +91,8 @@ def test_the_dry_run_reports_origin_and_writes_nothing(conn, tmp_path, capsys):
     out = capsys.readouterr().out
     assert counts(conn) == before and not list(tmp_path.iterdir())
     assert "Really-scraped snapshots to delete: 2" in out
-    assert "Products to rename: 2; to delete (no synthetic rows left): 1" in out
+    assert "Products to rename: 2 (one per brand); to delete: 2" in out
+    assert "Listings to move onto their brand's product: 1" in out
     assert "Listings to rename: 3; to delete (no synthetic rows left): 1" in out
     assert "scraped" in out and "Cinderhaven" in out
 
@@ -110,15 +114,17 @@ def test_apply_renames_the_synthetic_rows_and_deletes_the_scraped(conn, tmp_path
         assert cur.fetchall() == [(1, "Competitor A"), (2, "Competitor B"), (3, "Cinderhaven")]
         cur.execute("SELECT id, canonical_name, upc FROM products ORDER BY id")
         assert cur.fetchall() == [(10, NAMES["A"], None), (20, NAMES["B"], None), (30, "Cinderhaven Original 8 oz", None)]
-        cur.execute("SELECT id, retailer_id, product_url FROM retailer_listings ORDER BY id")
-        assert cur.fetchall() == [(100, "CSI-WM-A", "synthetic:walmart/CSI-WM-A"),
-                                  (101, "CSI-AZ-A", "synthetic:amazon/CSI-AZ-A"),
-                                  (200, "CSI-WM-B", "synthetic:walmart/CSI-WM-B"),
-                                  (300, "CIN-1", "synthetic://cinderhaven/1")]
+        cur.execute("SELECT id, product_id, retailer_id, product_url FROM retailer_listings ORDER BY id")
+        assert cur.fetchall() == [(100, 10, "CSI-WM-A", "synthetic:walmart/CSI-WM-A"),
+                                  (101, 10, "CSI-AZ-A", "synthetic:amazon/CSI-AZ-A"),
+                                  (200, 20, "CSI-WM-B", "synthetic:walmart/CSI-WM-B"),
+                                  (300, 30, "CIN-1", "synthetic://cinderhaven/1")]
         cur.execute("SELECT listing_id, count(*) FROM price_snapshots GROUP BY 1 ORDER BY 1")
         assert cur.fetchall() == [(100, 10), (101, 10), (200, 10), (300, 10)]
         cur.execute("SELECT count(*) FROM scrape_failures")
         assert cur.fetchone()[0] == 0
+        cur.execute("SELECT walmart_listing_id, amazon_listing_id, canonical_product_id, note FROM canonical_product_map")
+        assert cur.fetchall() == [(100, 101, 10, None)]
         assert orl.leftovers(cur, DENY) == []
     conn.rollback()
     assert go(conn, tmp_path, False) == 0  # a second run finds no real brand

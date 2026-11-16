@@ -10,7 +10,9 @@ What it does, in one transaction:
     midnight UTC, with no sale-badge text and no HTML hash. Anything else came from a real scrape (scrape.py stamps
     now()). Real-scrape rows are deleted, since the demo says its data is synthetic; synthetic rows are kept.
   - Renames the brand, its products (to the seeding script's fictional product name) and its listings (to the
-    seeding script's invented IDs and synthetic: URLs). A listing or product left with no rows is deleted.
+    seeding script's invented IDs and synthetic: URLs). Each brand ends with one product: the one with the most
+    synthetic rows takes every kept listing (a real scrape can leave a second product row under a brand, titled as
+    the retailer titles it). A listing left with no rows is deleted, and so is a product left with no listing.
   - Deletes scrape failures that hold those listings' real URLs, and clears a product-map note that names a brand.
   - Checks, before it commits, that no denied name is left in any text column it can reach. If one is, it rolls back.
 
@@ -110,16 +112,16 @@ def plan(cur, letters: dict[str, str], deny: frozenset[str], names: dict[str, st
             keep_listing.setdefault((bid, retailer), []).append((syn, lid, pid))
         else:
             drop_listing.append(lid)
-    kept_products = {pid for v in keep_listing.values() for _, _, pid in v}
-    drop_product = [pid for pid in product_syn if pid not in kept_products]
-    product_names, by_brand = {}, {}
-    for pid in kept_products:
-        bid, syn = product_syn[pid]
-        by_brand.setdefault(bid, []).append((-syn, pid))
-    for bid, ps in by_brand.items():
-        base = names.get(letter_of[bid], f"Competitor {letter_of[bid]} product")
-        for n, (_, pid) in enumerate(sorted(ps)):
-            product_names[pid] = base if n == 0 else f"{base} (variant {n + 1})"
+    # One product per brand: the one with the most synthetic rows (lowest id on a tie) takes every kept listing.
+    primary = {}
+    for pid, (bid, syn) in sorted(product_syn.items()):
+        if syn and (bid not in primary or syn > product_syn[primary[bid]][1]):
+            primary[bid] = pid
+    product_names = {pid: names.get(letter_of[bid], f"Competitor {letter_of[bid]} product")
+                     for bid, pid in primary.items()}
+    move_listing = {lid: primary[bid] for (bid, _), ls in keep_listing.items() for _, lid, pid in ls
+                    if pid != primary[bid]}
+    drop_product = [pid for pid in product_syn if pid not in product_names]
     listing_ids = {}
     for (bid, retailer), ls in keep_listing.items():
         for n, (_, lid, _) in enumerate(sorted(ls, key=lambda x: (-x[0], x[1]))):
@@ -131,7 +133,7 @@ def plan(cur, letters: dict[str, str], deny: frozenset[str], names: dict[str, st
     scraped = cur.fetchone()[0]
     return {"brands": brands, "real": real, "stops": stops, "report": report, "scraped": scraped,
             "drop_listing": drop_listing, "drop_product": drop_product, "product_names": product_names,
-            "listing_ids": listing_ids, "brand_ids": ids}
+            "listing_ids": listing_ids, "move_listing": move_listing, "brand_ids": ids}
 
 
 def print_plan(p: dict) -> None:
@@ -146,7 +148,9 @@ def print_plan(p: dict) -> None:
     for bid, n, letter in p["real"]:
         print(f"  {n!r} -> {'Competitor ' + letter if letter else 'NO LETTER'}")
     print(f"Really-scraped snapshots to delete: {p['scraped']}")
-    print(f"Products to rename: {len(p['product_names'])}; to delete (no synthetic rows left): {len(p['drop_product'])}")
+    print(f"Products to rename: {len(p['product_names'])} (one per brand); to delete: {len(p['drop_product'])} "
+          f"(merged into their brand's product, or left with no synthetic rows)")
+    print(f"Listings to move onto their brand's product: {len(p['move_listing'])}")
     print(f"Listings to rename: {len(p['listing_ids'])}; to delete (no synthetic rows left): {len(p['drop_listing'])}")
     for s in p["stops"]:
         print(f"STOP: {s}")
@@ -169,8 +173,12 @@ def backup(cur, out: Path) -> dict[str, int]:
     return counts
 
 
-def apply(cur, p: dict) -> None:
+def apply(cur, p: dict, deny: frozenset[str]) -> None:
     ids = p["brand_ids"]
+    cur.execute("SELECT id, note FROM canonical_product_map WHERE note IS NOT NULL")
+    for mid, note in cur.fetchall():
+        if denied(note, deny):
+            cur.execute("UPDATE canonical_product_map SET note = NULL WHERE id = %s", (mid,))
     real_listings = """SELECT rl.id FROM retailer_listings rl JOIN products pr ON pr.id = rl.product_id
                        WHERE pr.brand_id = ANY(%s)"""
     cur.execute(f"""DELETE FROM price_snapshots ps USING retailer_listings rl, products pr
@@ -180,6 +188,10 @@ def apply(cur, p: dict) -> None:
     drop_l, drop_p = p["drop_listing"] or [-1], p["drop_product"] or [-1]
     cur.execute("UPDATE canonical_product_map SET walmart_listing_id = NULL WHERE walmart_listing_id = ANY(%s)", (drop_l,))
     cur.execute("UPDATE canonical_product_map SET amazon_listing_id = NULL WHERE amazon_listing_id = ANY(%s)", (drop_l,))
+    for lid, pid in p["move_listing"].items():
+        cur.execute("UPDATE retailer_listings SET product_id = %s WHERE id = %s", (pid, lid))
+        cur.execute("UPDATE canonical_product_map SET canonical_product_id = %s WHERE walmart_listing_id = %s "
+                    "OR amazon_listing_id = %s", (pid, lid, lid))
     cur.execute("DELETE FROM canonical_product_map WHERE canonical_product_id = ANY(%s)", (drop_p,))
     cur.execute("DELETE FROM price_snapshots WHERE listing_id = ANY(%s)", (drop_l,))
     cur.execute("DELETE FROM retailer_listings WHERE id = ANY(%s)", (drop_l,))
@@ -233,7 +245,7 @@ def run(conn, do_apply: bool, letters: dict[str, str] = LETTERS, deny: frozenset
             print("Stopped: nothing written.")
             conn.rollback()
             return 1
-        apply(cur, p)
+        apply(cur, p, deny)
         left = leftovers(cur, deny)
         if left:
             conn.rollback()
