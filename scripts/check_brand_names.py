@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import ast
 import hashlib
+import os
 import re
 import subprocess
 import sys
@@ -63,6 +64,15 @@ def _norm(s: str) -> list[str]:
 
 def _h(s: str) -> str:
     return hashlib.sha256(s.encode()).hexdigest()
+
+
+#: Invented stand-ins for harness tests of the owner scripts, so no test file prints a real name. They are added
+#: (as names to deny, with letters) only when CSI_TEST_PROBE=1; adding names only makes a check stricter.
+PROBE_LETTERS = {_h("zeta sauce co"): "A", _h("quill"): "B"}
+
+
+def deny_set() -> frozenset[str]:
+    return DENIED | frozenset(PROBE_LETTERS) if os.environ.get("CSI_TEST_PROBE") == "1" else DENIED
 
 
 def denied(text: str, deny: frozenset[str] = DENIED) -> bool:

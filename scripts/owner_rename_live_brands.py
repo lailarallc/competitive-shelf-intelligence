@@ -252,7 +252,7 @@ def run(conn, do_apply: bool, letters: dict[str, str] = LETTERS, deny: frozenset
             print("Rolled back: a denied name is still in the database:", *left, sep="\n  ")
             return 1
         conn.commit()
-        print("Written. Re-run without --apply: it should find no real brand.")
+        print("Written: the transaction committed, and no denied name is left in the database.")
     return 0
 
 
