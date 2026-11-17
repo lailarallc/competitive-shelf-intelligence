@@ -44,8 +44,12 @@ def proxied_dsn(env_file: Path, port: int) -> str:
 
 def clear_cache(url: str) -> bool:
     """Wake the app, then empty its cache volume. False when it could not."""
+    # Cloudflare in front of the app answers Python's default user agent with 403 (2026-11-17), so the request never
+    # reached the app and flyctl ssh found no started machine. A browser user agent gets through.
+    req = urllib.request.Request(url.rstrip("/") + "/health", headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; "
+                                 "Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"})
     try:
-        urllib.request.urlopen(url.rstrip("/") + "/health", timeout=60).read()
+        urllib.request.urlopen(req, timeout=60).read()
     except Exception as e:
         print(f"  could not wake the app: {e}")
     r = subprocess.run(["flyctl", "ssh", "console", "-a", APP, "-C", "find /cache -mindepth 1 -delete"],
