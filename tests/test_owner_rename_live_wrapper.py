@@ -94,8 +94,16 @@ def brands():
 
 
 def test_1_the_page_check_fails_while_the_page_shows_a_real_name(live):
-    code, out = wrapper(live, "-PageOnly")
+    # app/anonymize.py masks every competitor brand, so a real name reaches the page only where the masking passes
+    # names through: the own brand. Plant one in it, prove the check sees it, then put it back.
+    _sql("UPDATE brands SET canonical_name = 'Cinderhaven Zeta Sauce Co' WHERE canonical_name = 'Cinderhaven'")
+    try:
+        code, out = wrapper(live, "-PageOnly")
+    finally:
+        _sql("UPDATE brands SET canonical_name = 'Cinderhaven' WHERE canonical_name = 'Cinderhaven Zeta Sauce Co'")
     assert code == 1 and "FAIL" in out and "names a real brand" in out, out
+    code, out = wrapper(live, "-PageOnly")  # masked: the stand-in brands no longer reach the page
+    assert code == 0 and "PASS" in out, out
 
 
 def test_2_a_wrong_answer_writes_nothing_and_skips_the_page_check(live):

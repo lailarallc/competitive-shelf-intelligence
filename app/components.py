@@ -48,8 +48,10 @@ def demo_data_banner() -> html.Div:
             ),
             html.Span(
                 "Competitor prices, promotions, out-of-stock events, and "
-                "assortment changes shown here are a synthetic dataset modeled on "
-                "public Walmart and Amazon product pages — not live scraped figures.",
+                "assortment changes shown here are a synthetic dataset, "
+                "not live scraped figures. Competitor brand names are invented "
+                "and the two retailer sites are shown as role labels. The scraper "
+                "is built and tested on saved pages. It is not running on this demo.",
                 style={"color": TEXT},
             ),
         ],
@@ -89,24 +91,21 @@ def last_scraped_indicator() -> html.Div:
 
     Queries lazily at render time so it reflects the actual DB state.
     """
+    from app.anonymize import retailer_label
     from app.data import get_last_scraped
     info = get_last_scraped()
     ts = info.get("completed_at")
     retailer = info.get("retailer", "")
 
     if ts is None:
-        text = "Last scraped: no data yet"
+        text = "Demo data: none loaded yet"
     else:
         if isinstance(ts, datetime):
             formatted = ts.strftime(f"%B {ts.day}, %Y")
         else:
             formatted = str(ts)[:10]
-        retailer_label = {
-            "all": "Amazon + Walmart",
-            "amazon": "Amazon",
-            "walmart": "Walmart",
-        }.get(str(retailer).lower(), retailer)
-        text = f"Last scraped: {formatted} ({retailer_label})"
+        label = retailer_label(retailer)
+        text = f"Demo data through: {formatted} ({label})"
 
     return html.Div(
         text,

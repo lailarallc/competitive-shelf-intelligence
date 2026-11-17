@@ -237,7 +237,7 @@ def run(conn, do_apply: bool, letters: dict[str, str] = LETTERS, deny: frozenset
             print("\nDry run: nothing written. Re-run with --apply to back up and write.")
             conn.rollback()
             return 0
-        out = backups / f"csi-{datetime.now(timezone.utc):%Y%m%dT%H%M%SZ}"
+        out = backups / f"csi-{datetime.now(timezone.utc):%Y%m%dT%H%M%S.%fZ}"  # two runs in one second never collide
         counts = backup(cur, out)
         print(f"\nBackup: {out} ({', '.join(f'{t} {n}' for t, n in counts.items())})")
         phrase = f"rename {len(p['real'])} brands"

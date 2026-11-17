@@ -38,8 +38,8 @@ HK_LIGHT    = "#6dcdb5"   # HK-70
 # ============================================================
 # Retailer-specific colors for this project
 # ============================================================
-COLOR_WALMART = CHICAGO     # Chicago-20 navy
-COLOR_AMAZON  = TEAL        # HK-35 teal
+COLOR_MASS_SITE = CHICAGO    # Chicago-20 navy
+COLOR_MARKETPLACE = TEAL      # HK-35 teal
 COLOR_OOS     = "#ee8880"   # Red-70 tint — OOS heatmap fill (red #cc100a is ink, never a fill)
 COLOR_PROMO   = "#ee8a2a"   # SG-55 orange — promo events
 

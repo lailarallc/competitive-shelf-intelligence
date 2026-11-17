@@ -10,16 +10,30 @@ from __future__ import annotations
 
 import logging
 import os
+import functools
 from datetime import date, timedelta
 from typing import Optional
 
 import pandas as pd
 
 from flask_caching import Cache
+from app.anonymize import anonymize_frame
 from app.constants import OWN_BRAND
 
 cache = Cache()
 logger = logging.getLogger(__name__)
+
+
+def _public_names(fn):
+    """Return the query result with invented brand names and retailer role labels.
+
+    Applied under the cache decorator, so nothing with a source name is cached
+    or handed to a tab.
+    """
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        return anonymize_frame(fn(*args, **kwargs))
+    return wrapper
 
 
 def init_cache(server) -> None:
@@ -118,6 +132,7 @@ def get_last_scraped() -> dict:
 # ------------------------------------------------------------------
 
 @cache.memoize(timeout=3600)
+@_public_names
 def get_latest_price_per_oz() -> pd.DataFrame:
     """Most recent price_per_oz per listing (all retailers)."""
     from app.db import get_conn
@@ -152,6 +167,7 @@ def get_latest_price_per_oz() -> pd.DataFrame:
 # ------------------------------------------------------------------
 
 @cache.memoize(timeout=3600)
+@_public_names
 def get_promo_events(days: int = 30) -> pd.DataFrame:
     """All promo events (badge or price-drop) within the date window."""
     from app.db import get_conn
@@ -184,6 +200,7 @@ def get_promo_events(days: int = 30) -> pd.DataFrame:
 
 
 @cache.memoize(timeout=3600)
+@_public_names
 def get_promo_summary(days: int = 30) -> pd.DataFrame:
     """Aggregate promo event count and avg depth per brand/retailer."""
     from app.db import get_conn
@@ -224,6 +241,7 @@ def get_promo_summary(days: int = 30) -> pd.DataFrame:
 # ------------------------------------------------------------------
 
 @cache.memoize(timeout=3600)
+@_public_names
 def get_oos_events(days: int = 30) -> pd.DataFrame:
     """All OOS events within the date window."""
     from app.db import get_conn
@@ -303,6 +321,7 @@ def get_cinderhaven_oos_exposure(days: int = 30) -> dict:
 # ------------------------------------------------------------------
 
 @cache.memoize(timeout=3600)
+@_public_names
 def get_assortment_changes() -> pd.DataFrame:
     """Products new or absent comparing latest vs prior scrape run."""
     from app.db import get_conn
@@ -360,6 +379,7 @@ def get_assortment_changes() -> pd.DataFrame:
 # ------------------------------------------------------------------
 
 @cache.memoize(timeout=3600)
+@_public_names
 def get_review_trends(days: int = 30) -> pd.DataFrame:
     """Star rating and review count per brand per date."""
     from app.db import get_conn
